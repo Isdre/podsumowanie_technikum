@@ -1,0 +1,44 @@
+*
+{
+    margin: 0;
+    padding: 0;
+}
+header,footer
+{
+    padding: 20px;
+    color: #fff;
+    height: 60px;
+    background-color: rgb(46, 190, 190);
+}
+.container
+{
+    min-height: 700px;
+    background-color: #aaa;
+    clear: both;
+}
+.articles
+{
+    margin: 10px;
+    padding: 5px;
+    width: calc(70% - 40px);
+    min-height: 660px;
+    border: 5px solid rgb(46, 190, 190);
+    background-color: #ddd;
+    float: left;
+    
+}
+.account
+{
+    margin: 10px;
+    padding: 5px;
+    width: calc(30% - 40px);
+    min-height: 660px;
+    background-color: #ddd;
+    border: 5px solid rgb(46, 190, 190);
+    float: left;
+}
+h2,h3
+{
+    color: rgb(46, 190, 190);
+    text-align: center;
+}
