@@ -152,9 +152,6 @@ include("delete.php");
         const log_com = $("#rej").find("#rej_log_com");
         const pass_com = $("#rej").find("#rej_pass_com");
         const email_com = $("#rej").find("#rej_email_com");
-        console.log(log_com);
-        console.log(pass_com);
-        console.log(email_com);
         let a = true;
         let b = true;
         let c = true;
@@ -169,38 +166,52 @@ include("delete.php");
             }
         }
 
+        function ValidateEmailAddress(emailString) {
+        // check for @ sign
+        var atSymbol = emailString.indexOf("@");
+        if(atSymbol < 1) return false;
+            
+        var dot = emailString.indexOf(".");
+        if(dot <= atSymbol + 2) return false;
+            
+        // check that the dot is not at the end
+        if (dot === emailString.length - 1) return false;
+            
+        return true;
+        }
+
         $("#rej").ready(function() {
         $("input#rej_password").on('blur', function() {
-            l = $(this).val().length;
+            let l = $(this).val().length;
             if(l < 6 || l > 20){
                 $(this).addClass("pass-error");
-                pass_com.innerHTML = "Hasło powinno składać się z conajmniej 6 oraz maksymalnie 20 znaków.";
+                pass_com.text("Hasło powinno składać się z conajmniej 6 oraz maksymalnie 20 znaków.");
                 a = false
             }
             else{
                 $(this).removeClass("pass-error");
-                pass_com.innerHTML = "";
+                pass_com.empty();
                 a = true;
             }
             sub_button(a,b,c)
         });
         $("input#rej_login").on('blur', function() {
-            l = $(this).val().length;
+            let l = $(this).val().length;
             if(l < 6 || l > 20){
                 $(this).addClass("log-error");
-                log_com.innerHTML = "Nazwa użytkownika powinna składać się z conajmniej 6 oraz maksymalnie 20 znaków.";
+                log_com.text("Nazwa użytkownika powinna składać się z conajmniej 6 oraz maksymalnie 20 znaków.");
                 b = false
             }
             else{
                 $(this).removeClass("log-error");
-                log_com.innerHTML = "";
+                log_com.empty();
                 b = true
             }
             sub_button(a,b,c)
         });
         $("input#rej_email").on('blur', function() {
-            l = $(this).val().length;
-            if(l < 6 || l > 20){
+            let email = $(this).val();
+            if(!ValidateEmailAddress(email)){
                 $(this).addClass("email-error");
                 c = false
             }
