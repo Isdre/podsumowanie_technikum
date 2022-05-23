@@ -6,11 +6,11 @@ $email_error = "";
 $login_error = "";
 $register_error = "";
 if(isset($_POST['Sign']) || isset($_POST['Log'])){
-    $login = strip_tags($_POST['login']);
-    $password = strip_tags($_POST['password']);
     if(isset($_POST['Sign']))
     {   
-        $email = strip_tags($_POST['email']);
+        $login = strip_tags($_POST['rej_login']);
+        $password = strip_tags($_POST['rej_password']);
+        $email = strip_tags($_POST['rej_email']);
         $result =  $mysqli->query("SELECT COUNT(*) AS \"Z\" FROM users WHERE email = \"$email\" OR username = \"$login\";");
         $count = 0;
         foreach($result as $row){
@@ -25,6 +25,8 @@ if(isset($_POST['Sign']) || isset($_POST['Log'])){
             $register_error = "Email lub nazwa użytkownika jest już zajęta.";
         }
     }else{
+        $login = strip_tags($_POST['login']);
+        $password = strip_tags($_POST['password']);
         $result = $mysqli->query("SELECT id FROM users WHERE users.password = \"$password\" AND username = \"$login\" ORDER BY id LIMIT 1");
         foreach($result as $user){
             $user_id = $user['id'];
@@ -46,6 +48,7 @@ include("delete.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Forum</title>
+    <script src="jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <header><h1>Forum</h1></header>
@@ -63,27 +66,39 @@ include("delete.php");
             }else
             {
             echo "<h3>Zaloguj się</h3>";
+                
                 echo "<form method=\"post\" action=\"index.php\">";
                 echo "<input type=\"checkbox\" id=\"Log\" name=\"Log\" checked hidden>";
                 echo "<label for=\"login\">Nazwa użytkownika:</label><br>";
-                echo "<input type=\"text\" id=\"login\" name=\"login\" required><br>";
+                echo "<input type=\"text\" id=\"login\" name=\"login\" placeholder=\"Nazwa użytkownika\" required><br>";
                 echo "<label for=\"password\">Hasło:</label><br>";
-                echo "<input type=\"text\" id=\"password\" name=\"password\" required><br>";
+                echo "<input type=\"text\" id=\"password\" name=\"password\" placeholder=\"Hasło\" required><br>";
                 echo "<input type=\"submit\" class=\"sub_button\" value=\"Zaloguj się\">";
                 echo "</form>";
+                if($login_error != ""){
+                    echo "<div class=\"error\">" . $login_error;
+                    echo "</div>";
+                }
             echo "<h3>Zarejestuj się</h3>";
-                echo "<form method=\"post\" action=\"index.php\">";
+                echo "<form method=\"post\" action=\"index.php\" id=\"rej\">";
                 echo "<input type=\"checkbox\" id=\"Sign\" name=\"Sign\" checked hidden>";                
-                echo "<label for=\"login\">Nazwa użytkownika:</label><br>";
-                echo "<input type=\"text\" id=\"login\" name=\"login\" required><br>";
-                echo "<label for=\"email\">Email:</label><br>";
-                echo "<input type=\"text\" id=\"email\" name=\"email\" required><br>";
-                echo "<label for=\"password\">Hasło:</label><br>";
-                echo "<input type=\"text\" id=\"password\" name=\"password\" required><br>";
+                echo "<label for=\"rej_login\">Nazwa użytkownika:</label><br>";
+                echo "<input type=\"text\" id=\"rej_login\" name=\"rej_login\" placeholder=\"Nazwa użytkownika\" required><br>";
+                echo "<div id=\"rej_log_com\" class=\"com\"></div>";
+                echo "<label for=\"rej_email\">Email:</label><br>";
+                echo "<input type=\"text\" id=\"rej_email\" name=\"rej_email\" placeholder=\"Email\" required><br>";
+                echo "<div id=\"rej_email_com\" class=\"com\"></div>";
+                echo "<label for=\"rej_password\">Hasło:</label><br>";
+                echo "<input type=\"text\" id=\"rej_password\" name=\"rej_password\" placeholder=\"Hasło\" required><br>";
+                echo "<div id=\"rej_pass_com\" class=\"com\"></div>";
                 echo "<label for=\"reg\">Zapoznałem się z regulaminem</label><br>";
                 echo "<input type=\"checkbox\" id=\"reg\" name=\"reg\" checked required><br>"; 
                 echo "<input type=\"submit\" class=\"sub_button\" value=\"Zarejestuj się\">";
                 echo "</form>";
+                if($register_error != ""){
+                    echo "<div class=\"error\">" . $register_error;
+                    echo "</div>";
+                }
             }
             ?>
         </div>
@@ -131,6 +146,71 @@ include("delete.php");
         </div>
         
     </div>
-    <footer></footer>
+    <footer>Gilbert Guszcza</footer>
+    <script>
+        const sub = $("#rej").find(".sub_button");
+        const log_com = $("#rej").find("#rej_log_com");
+        const pass_com = $("#rej").find("#rej_pass_com");
+        const email_com = $("#rej").find("#rej_email_com");
+        console.log(log_com);
+        console.log(pass_com);
+        console.log(email_com);
+        let a = true;
+        let b = true;
+        let c = true;
+
+        function sub_button(a,b,c)
+        {   
+            if(a & b & c){
+            sub.prop('disabled', false);
+            }
+            else{
+            sub.prop('disabled', true);
+            }
+        }
+
+        $("#rej").ready(function() {
+        $("input#rej_password").on('blur', function() {
+            l = $(this).val().length;
+            if(l < 6 || l > 20){
+                $(this).addClass("pass-error");
+                pass_com.innerHTML = "Hasło powinno składać się z conajmniej 6 oraz maksymalnie 20 znaków.";
+                a = false
+            }
+            else{
+                $(this).removeClass("pass-error");
+                pass_com.innerHTML = "";
+                a = true;
+            }
+            sub_button(a,b,c)
+        });
+        $("input#rej_login").on('blur', function() {
+            l = $(this).val().length;
+            if(l < 6 || l > 20){
+                $(this).addClass("log-error");
+                log_com.innerHTML = "Nazwa użytkownika powinna składać się z conajmniej 6 oraz maksymalnie 20 znaków.";
+                b = false
+            }
+            else{
+                $(this).removeClass("log-error");
+                log_com.innerHTML = "";
+                b = true
+            }
+            sub_button(a,b,c)
+        });
+        $("input#rej_email").on('blur', function() {
+            l = $(this).val().length;
+            if(l < 6 || l > 20){
+                $(this).addClass("email-error");
+                c = false
+            }
+            else{
+                $(this).removeClass("email-error");
+                c = true
+            }
+            sub_button(a,b,c)
+        });
+        });
+    </script>   
 </body>
 </html>
